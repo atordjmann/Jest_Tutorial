@@ -38,14 +38,17 @@ npm install --save-dev jest
 
 * Les "matchers" (voir https://jestjs.io/docs/en/expect)
 Jest utilise les matchers pour tester les valeurs de façon différentes.
-Par exemple pour tester une égalité, on utilisera le matcher "toBe()" : expect(2 + 2).toBe(4).
-Pour tester l'égalité d'un objet, on utilisera plutôt "toEqual()" : expect(data).toEqual({one: 1, two: 2}).
-Pour tester la correspondance avec une expression régulière : expect('Christoph').toMatch(/stop/).
-Pour tester si on Array contient bien un élément : expect(shoppingList).toContain('beer').
+Par exemple pour tester une égalité, on utilisera le matcher "toBe()" : `expect(2 + 2).toBe(4)`.
+Pour tester l'égalité d'un objet, on utilisera plutôt "toEqual()" : `expect(data).toEqual({one: 1, two: 2})`.
+Pour tester la correspondance avec une expression régulière : `expect('Christoph').toMatch(/stop/)`.
+Pour tester si on Array contient bien un élément : `expect(shoppingList).toContain('beer')`.
 
 * Tester un code asynchrone : 
-Une des particularités de javascript est la possibilité de faire du code asynchrone. Par exemple, si dans le même fichier on appelle une fonction qui récupère des données, et une fonction qui effectue une autre tâche, la deuxième fonction peut s'exécuter avant même que la première ait fini. Parfois cela peut être utile et offrir un gain de temps, mais si c'est mal utiliser cela peut causer quelques problèmes... Imaginons que la deuxième fonction remplit un tableau avec les données : aïe l'erreur console ! (Pour en savoir plus sur le code asynchrone : https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous).
+Une des particularités de javascript est la possibilité de faire du code asynchrone. 
+Par exemple, si dans le même fichier on appelle une fonction qui récupère des données, et une fonction qui effectue une autre tâche, la deuxième fonction peut s'exécuter avant même que la première ait fini. Parfois cela peut être utile et offrir un gain de temps, mais si c'est mal utiliser cela peut causer quelques problèmes... Imaginons que la deuxième fonction remplit un tableau avec les données : aïe l'erreur console ! 
+(Pour en savoir plus sur le code asynchrone : https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous).
 Un exemple pour tester une fonction fetchData qui prend en argument une fonction callback :
+```javascript
 test('the data is peanut butter', done => {
   function callback(data) {
     expect(data).toBe('peanut butter');
@@ -54,6 +57,7 @@ test('the data is peanut butter', done => {
 
   fetchData(callback);
 });
+```
 la fonction `done()` permet d'attendre que l'appel à callback soit effectué avant que fetchData soit executé.
 
 Lorsque le code contient une promise, on peut utiliser `.then` dans un `return` : 
@@ -64,7 +68,8 @@ return fetchData().then(data => {
 ```  
 
 * Configuration nécessaires avant ou après les tests.
-Typiquement, lorsqu'on travaille avec une base de donnée (de test), on a besoin de l'initialiser avec de faire les tests. On peut vérifier qu'aucune donnée ne va corrompre nos tests, ou bien ajouter des données nécessaires initialement... Puis vider la base après les tests. Pour cela on utilise `beforeEach()' ou 'afterEach()' avant ou après chaque test.
+Typiquement, lorsqu'on travaille avec une base de donnée (de test), on a besoin de l'initialiser avec de faire les tests. 
+On peut vérifier qu'aucune donnée ne va corrompre nos tests, ou bien ajouter des données nécessaires initialement... Puis vider la base après les tests. Pour cela on utilise `beforeEach()' ou 'afterEach()' avant ou après chaque test.
 Si on a besoin de faire quelque chose avant tout test, on peut utiliser `beforeAll()` et `afterAll()`
 Par exemple : 
 ```javascript
@@ -120,8 +125,8 @@ test('adds 1 + 2 to equal 3', () => {
 });
 ```
 
-Que fait-on ici ? 
-On importe notre fonction `sum`, puis au sein d'un test que l'on nomme 'Adds 1 + 2 to equel 3', on vérifie que la fonction sum avec les arguments 1 et 2 retourne 3. Avec `toBe` on vérifie que les deux valeurs (sum(1,2) et 3) sont strictement identiques. Il y a d'autres tests possibles que l'on verra plus tard ou qui sont détaillés dans la documentation officielle, dans la section [Using Matchers](https://jestjs.io/docs/en/using-matchers).
+*Que fait-on ici ?
+On importe notre fonction `sum`, puis au sein d'un test que l'on nomme 'Adds 1 + 2 to equel 3', on vérifie que la fonction sum avec les arguments 1 et 2 retourne 3. Avec `toBe` on vérifie que les deux valeurs (sum(1,2) et 3) sont strictement identiques. Il y a d'autres tests possibles que l'on verra plus tard ou qui sont détaillés dans la documentation officielle, dans la section [Using Matchers](https://jestjs.io/docs/en/using-matchers).*
 
 Avant de voir si notre test passe ou pas, ajouter ceci au fichier `package.json`:
 
@@ -152,11 +157,12 @@ Après l'ajout de cet utilisateur, il sera possible d'afficher le classement de 
 
 Dans un premier temps, nous n'écrirons que du javascript. Aucun HTML. La partie HTML est une partie "bonus" qui ne rentrera pas dans le cadre de Jest. Il serait possible de tester les vues afficher, et de faire des tests plus complexes en utilisant l'HTML, mais nous allons rester simples.
 Ce que nous allons tester : 
-* une fonction createUser() qui à partir des inputs de l'utilisateur, renvoie un objet JSON définissant l'utilisateur.
-* une fonction addUser() qui ajoute un utilisateur dans la liste des personnes.
-* une fonction sortUser() qui renvoie la liste des personnes triée selon , avec le rang du dernier utilisateur ajouté.
+* une fonction `createUser()` qui à partir des inputs de l'utilisateur, renvoie un objet JSON définissant l'utilisateur.
+* une fonction `addUser()` qui ajoute un utilisateur dans la liste des personnes.
+* une fonction `sortUser()` qui renvoie la liste des personnes triée selon , avec le rang du dernier utilisateur ajouté.
+
 ### Créer un utilisateur
-Note: ici on ne va écrire que du javascript. Les données ne sont pas persistées en base. Ainsi, si l'on refresh, les données sont perdues.
+**Note**: ici on ne va écrire que du javascript. Les données ne sont pas persistées en base. Ainsi, si l'on refresh, les données sont perdues.
 
 Dans un fichier `user.js` écrire une fonction createUser qui prend comme argument le prénom, le nom, l'âge, et renvoie un objet JSON de la forme:{"name":name, "surname":surname, "age":age}.
 Puis dans un fichier `user.test.js` écrire un test qui vérifie le bon fonctionnement de la fonction.
