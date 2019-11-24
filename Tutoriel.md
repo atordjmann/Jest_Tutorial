@@ -424,4 +424,137 @@ describe('sort and rank users', () => {
 
 ### Mocker un utilisateur
 
-Il serait intéressant d'implémenter des requêtes afin de renvoyer en JSON une liste d'utilisateurs avec l'URL '/users', ou un seul utilisateur avec l'URL '/users/id'. On pourrait mocker la liste d'utilisateur, la fonction de requête et vérifier que l'on renvoit la bonne liste. Des tests un peu comme dans le cours de java serveur.
+Nous allons maintenant tester un code javascript qui utilise la librairie Axios.
+
+Pour cela il faut installer les modules axios et json-server.
+
+Ensuite, créons quelques "fausses" données dans un fichier `users.json` :
+```javascript
+{
+	"users": [
+		{
+			"id":1,
+			"name": "John",
+			"surname": "Doe",
+			"age": "21"
+		},
+		{
+			"id":2,
+			"name": "Pierre",
+			"surname": "Martin",
+			"age": "10"
+		},
+		{
+			"id":3,
+			"name": "Paul",
+			"surname": "Martin",
+			"age": "45"
+		},
+		{
+			"id":4,
+			"name": "Jack",
+			"surname": "Martin",
+			"age": "4"
+		}
+	]
+}
+```
+Créer une classe Users dans `users.js`
+```javascript
+const axios = require('axios');
+
+class Users {
+
+     static async all() {
+        let res = await axios.get('http://localhost:3000/users');
+        return res;
+      }
+}
+```
+Puis créer le fichier `users-app.js`dans lequel on définit la fonction pour afficher les données:
+```javascript
+const Users = require('./users');
+
+async function showData() {
+    let res = await Users.all();
+    console.log(res.data);
+}
+
+showData();
+console.log('finished')
+```
+Pour faire fonctionner cette fonction, dans une console écrire : 
+
+`json-server --watch users.json ` pour démarrer le json-server,
+
+`node users-app.js` pour lancer l'application, en s'assurant d'avoir le module `node` d'installé.
+
+Dans la console devrait s'afficher : 
+
+```
+finished
+[
+		{
+			"id":1,
+			"name": "John",
+			"surname": "Doe",
+			"age": "21"
+		},
+		{
+			"id":2,
+			"name": "Pierre",
+			"surname": "Martin",
+			"age": "10"
+		},
+		{
+			"id":3,
+			"name": "Paul",
+			"surname": "Martin",
+			"age": "45"
+		},
+		{
+			"id":4,
+			"name": "Jack",
+			"surname": "Martin",
+			"age": "4"
+		}
+	]
+```
+
+Maintenant testons : 
+
+`user.test.js`
+```javascript
+const axios = require('axios');
+const {createUser, addUser, sortUser, rankUser, Users} = require('./user');
+
+jest.mock('axios');
+
+test('should fetch users', () => {
+
+    const users = [{
+        "id": 1,
+        "first_name": "Robert",
+        "last_name": "Schwartz",
+        "age": "18"
+    }, {
+        "id": 2,
+        "first_name": "Lucy",
+        "last_name": "Ballmer",
+        "age": "68"
+    }];
+
+    const resp = { data : users };
+
+    axios.get.mockImplementation(() => Promise.resolve(resp));
+
+    Users.all().then(resp => expect(resp.data).toEqual(users));
+});
+```
+**Et voilà !**
+
+Avec `jest.mock('axios')` on mock le module, avec les constantes `users` et `resp` on définie la réponse que le module mocké devra retourner. 
+
+Avec `axios.get.mockImplementation(() => Promise.resolve(resp));` on mock l'implémentation en renvoyant une promise avec la réponse.
+
+Et enfin, avec `Users.all().then(resp => expect(resp.data).toEqual(users));` on teste la fonction Users.all() ainsi mockée.
