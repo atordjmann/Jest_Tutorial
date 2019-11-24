@@ -22,7 +22,6 @@ Jest offre une solution simple, rapide et efficace pour faire des tests unitaire
 * Tuto de zetcode : http://zetcode.com/javascript/jest/
 
 ## Installation
-### Installer Jest dans un projet
 Installer Jest avec [`yarn`](https://yarnpkg.com/en/package/jest):
 
 ```bash
@@ -34,10 +33,20 @@ Ou avec [`npm`](https://www.npmjs.com/):
 ```bash
 npm install --save-dev jest
 ```
+Un fichier de test est de la forme `nom_fichier.test.js`
 
-### Quelques fonctionnalités principales
+Pour lancer les tests on utilise : `yarn test` ou `npm run test` après avoir configuré le fichier package.json avec :
+```
+{
+  "scripts": {
+    "test": "jest"
+  }
+}
+```
 
-#### Les "matchers" (voir https://jestjs.io/docs/en/expect)
+## Quelques fonctionnalités principales
+
+### Les "matchers" (voir https://jestjs.io/docs/en/expect)
 Jest utilise les matchers pour tester les valeurs de façon différentes.
 
 Par exemple pour tester une égalité, on utilisera le matcher "toBe()" : `expect(2 + 2).toBe(4)`.
@@ -48,7 +57,7 @@ Pour tester la correspondance avec une expression régulière : `expect('Christo
 
 Pour tester si on Array contient bien un élément : `expect(shoppingList).toContain('beer')`.
 
-#### Tester un code asynchrone : 
+### Tester un code asynchrone : 
 Une des particularités de javascript est la possibilité de faire du code asynchrone. 
 
 Par exemple, si dans le même fichier on appelle une fonction qui récupère des données, et une fonction qui effectue une autre tâche, la deuxième fonction peut s'exécuter avant même que la première ait fini. Parfois cela peut être utile et offrir un gain de temps, mais si c'est mal utiliser cela peut causer quelques problèmes... Imaginons que la deuxième fonction remplit un tableau avec les données : aïe l'erreur console ! 
@@ -75,7 +84,7 @@ return fetchData().then(data => {
   });
 ```  
 
-#### Configuration nécessaires avant ou après les tests.
+### Configuration nécessaires avant ou après les tests.
 Typiquement, lorsqu'on travaille avec une base de donnée (de test), on a besoin de l'initialiser avec de faire les tests. 
 
 On peut vérifier qu'aucune donnée ne va corrompre nos tests, ou bien ajouter des données nécessaires initialement... Puis vider la base après les tests. Pour cela on utilise `beforeEach()' ou 'afterEach()' avant ou après chaque test.
@@ -112,7 +121,7 @@ describe('matching cities to foods', () => {
 });
 ```
 
-#### Mock
+### Mock
 C'est la partie qui semble être la plus complexe avec Jest.
 
 Parfois, il existe des dépendances dans notre code. Par exemple une classe qui appelle une autre classe, une fonction qui nécessite un module... 
@@ -198,7 +207,10 @@ test('should fetch users', () => {
 ```
 Le mock est un sujet très vaste dans les tests. La documentation officielle fournit davantage d'exemples et de notions.
 
-### Premier test avec Jest
+## Premier test avec Jest
+Installer Jest dans un nouveau projet.
+
+Un fichier package-lock.json ainsi qu'un dossier node_modules sont créés.
 
 Créer un ficher `sum.js`:
 ```javascript
@@ -217,11 +229,13 @@ test('adds 1 + 2 to equal 3', () => {
 });
 ```
 
-.. note:: Que fait-on ici ?
-	On importe notre fonction `sum`, puis au sein d'un test que l'on nomme 'Adds 1 + 2 to equel 3', on vérifie que la fonction sum avec les arguments 1 et 2 retourne 3. Avec `toBe` on vérifie que les deux valeurs (sum(1,2) et 3) sont strictement identiques. Il y a d'autres tests possibles que l'on verra plus tard ou qui sont détaillés dans la documentation officielle, dans la section [Using Matchers](https://jestjs.io/docs/en/using-matchers).*
+**Que fait-on ici ?**
 
-.. caution:: Package
-	Avant de voir si notre test passe ou pas, ajouter ceci au fichier `package.json`:
+On importe notre fonction `sum`, puis au sein d'un test que l'on nomme 'Adds 1 + 2 to equel 3', on vérifie que la fonction sum avec les arguments 1 et 2 retourne 3. Avec `toBe` on vérifie que les deux valeurs (sum(1,2) et 3) sont strictement identiques. Il y a d'autres tests possibles que l'on verra plus tard ou qui sont détaillés dans la documentation officielle, dans la section [Using Matchers](https://jestjs.io/docs/en/using-matchers).*
+
+**Attention**
+
+Avant de voir si notre test passe ou pas, ajouter un fichier `package.json` avec pour contenu:
 
 ```json
 {
@@ -231,12 +245,17 @@ test('adds 1 + 2 to equal 3', () => {
 }
 ```
 
-Et maintenant lancer le test à l'aide de la commande `yarn test` or `npm run test`.
+Et maintenant lancer le test à l'aide de la commande `yarn test` ou `npm run test`.
 
-Si tout va bien et que 1+2 vaut toujours 3, ce message devrait apparaître : 
+Si tout va bien et que 1+2 vaut toujours 3, un message devrait apparaître comme celui-ci : 
 ```bash
 PASS  ./sum.test.js
 ✓ adds 1 + 2 to equal 3 (5ms)
+Test Suites: 1 passed, 1 total
+Tests:       1 passed, 1 total
+Snapshots:   0 total
+Time:        7.848s
+Ran all test suites.
 ```
 
 **TADAM!**
@@ -262,8 +281,11 @@ Ce que nous allons tester :
 * une fonction `rankUser()` qui renvoie le classement de l'utilisateur dans la liste triée.
 
 ### Créer un utilisateur
-.. note:: Note
-	Ici on ne va écrire que du javascript. Les données ne sont pas persistées en base. Ainsi, si l'on refresh, les données sont perdues.
+**Créer un nouveau projet avec le module Jest (voir installation).**
+
+**Note**
+
+Ici on ne va écrire que du javascript. Les données ne sont pas persistées en base. Ainsi, si l'on refresh, les données sont perdues.
 
 Dans un fichier `user.js` écrire une fonction createUser qui prend comme argument le prénom, le nom, l'âge, et renvoie un objet JSON de la forme:{"name":name, "surname":surname, "age":age}.
 
@@ -286,9 +308,13 @@ module.exports  = {createUser}
 const {createUser} = require('./user');
 
 test('create an user', () => {
-	expect(createUser("John", "Doe", "21")).toBe({"name":"John", "surname":"Doe", "age":"21"})
+	expect(createUser("John", "Doe", "21")).toEqual({"name":"John", "surname":"Doe", "age":"21"})
 });
 ```
+**Attention!**
+
+Ici le matcher `.toBe()` renverra une erreur "Expected: {"age": "21", "name": "John", "surname": "Doe"}
+    Received: serializes to the same string", car `.toBe` teste une égalité excate, ce qui n'est pas le cas lorsqu'on compare deux objets JSON.
 
 ### Ajouter un utilisateur
 Dans le fichier `user.js` ajouter une fonction qui permet d'ajouter à une liste donnée un utilisateur sous le format JSON renvoyé par la fonction createUser.
@@ -301,7 +327,7 @@ Correction:
 
 ```javascript
 const addUser = function(jsonUser, userList){
-	userList.append(jsonUser);
+	userList.push(jsonUser);
 }
 
 module.exports  = {createUser, addUser}
@@ -313,9 +339,12 @@ const {createUser, addUser} = require('./user');
 test('add an user to a list', () => {
 	var userList = [];
 	addUser({"name":"John", "surname":"Doe", "age":"21"},userList);
-	expect(userList).toContain({"name":"John", "surname":"Doe", "age":"21"})
+	expect(userList).toContainEqual({"name":"John", "surname":"Doe", "age":"21"})
 });
 ```
+**Attention**
+
+Il faut utiliser `.toContainEqual` et pas seulement `.toContain()` car on vérifie que la liste contient un objet JSON : c'est un "mélange" entre `.toContain()` et `.toEqual()` qu'il faut utiliser.
 
 ### Classer les utilisateurs
 Dans le fichier `user.js` ajouter une fonction `sortUser()` qui permet de classer les personnes selon leur âge dans une liste de personne telle que userList de la partie précédante. Ajouter également une fonction `rankUser()`qui donne le rang d'un utilisateur dans la liste.
@@ -332,7 +361,7 @@ const sortUser = function(listUser){
 	for(var i = 1; i < listUser.length; i++){
 		var current = listUser[i];
 		var j = i;
-		while(j > 0 && listUser[j - 1].age > current.age){
+		while(j > 0 && (+listUser[j - 1].age > +current.age)){
 			listUser[j] = listUser[j-1];
 			j = j-1;
 		}
@@ -343,7 +372,7 @@ const sortUser = function(listUser){
 
 const rankUser = function(user, userList){
 	var sortedList = sortUser(userList);
-	var index = sortedList.findIndex(user);
+	var index = sortedList.findIndex(x => x.name === user.name && x.surname === user.surname && x.age === user.age);
 	if(index != -1){
 		return userList.length - index
 	}
@@ -362,7 +391,7 @@ test('sort an userList', () => {
 			{"name":"Pierre", "surname":"Martin", "age":"10"},
 			{"name":"Paul", "surname":"Martin", "age":"45"},
 			{"name":"Jack", "surname":"Martin", "age":"4"}];
-	expect(sortUser(userList)).toBe([{"name":"Jack", "surname":"Martin", "age":"4"},
+	expect(sortUser(userList)).toMatchObject([{"name":"Jack", "surname":"Martin", "age":"4"},
 			{"name":"Pierre", "surname":"Martin", "age":"10"},
 			{"name":"John", "surname":"Doe", "age":"21"},
 			{"name":"Paul", "surname":"Martin", "age":"45"}])
@@ -376,6 +405,12 @@ test('rank a user in userList', () => {
 	expect(rankUser(user, userList)).toBe(3)
 });
 ```
+**Attention**
+
+On compare les âges, il faut penser à les convertir de string à int, à l'aide d'un simple `+`. En effet javascript sait caster automatiquement une string d'entier en entier en le faisant précéder d'un `+`.
+
+Aussi on utilisera ici comme matcher `.toMatchObject()` pour vérifier que le tableau d'objet est bien celui attendu.
+
 ### Compartimenter les tests
 Dans le fichier `user.test.js` organiser les tests en deux parties à l'aide de describe. Une partie création/ajout d'utilisateur. Et une partie tri.
 
@@ -386,12 +421,12 @@ Puis, utiliser beforeAll() afin de remplir notre liste d'utilisateur si besoin, 
 const {createUser, addUser, sortUser, rankUser} = require('./user');
 describe('create and add users', () => {
 	test('create an user', () => {
-		expect(createUser("John", "Doe", "21")).toBe({"name":"John", "surname":"Doe", "age":"21"})
+		expect(createUser("John", "Doe", "21")).toEqual({"name":"John", "surname":"Doe", "age":"21"})
 	});
 	test('add an user to a list', () => {
 		var userList = [];
 		addUser({"name":"John", "surname":"Doe", "age":"21"},userList);
-		expect(userList).toContain({"name":"John", "surname":"Doe", "age":"21"})
+		expect(userList).toContainEqual({"name":"John", "surname":"Doe", "age":"21"})
 	});
 });
 
@@ -407,7 +442,7 @@ describe('sort and rank users', () => {
 		userList = [];
 	});
 	test('sort an userList', () => {
-		expect(sortUser(userList)).toBe([{"name":"Jack", "surname":"Martin", "age":"4"},
+		expect(sortUser(userList)).toMatchObject([{"name":"Jack", "surname":"Martin", "age":"4"},
 			{"name":"Pierre", "surname":"Martin", "age":"10"},
 			{"name":"John", "surname":"Doe", "age":"21"},
 			{"name":"Paul", "surname":"Martin", "age":"45"}])
@@ -420,13 +455,26 @@ describe('sort and rank users', () => {
 });
 
 ```
-
+Si tout va bien, vous devriez obtenir le message :
+```bash
+ PASS  ./user.test.js
+  create and add users
+    √ create an user (21ms)
+    √ add an user to a list (3ms)
+  sort and rank users
+    √ sort an userList (2ms)
+    √ rank a user in userList (2ms)
+```
 
 ### Mocker un utilisateur
 
 Nous allons maintenant tester un code javascript qui utilise la librairie Axios.
 
-Pour cela il faut installer les modules axios et json-server.
+Pour cela il faut installer les modules axios et json-server :
+
+* `npm install axios` ou `yarn add axios`
+
+* `npm install -g json-server` ou `yarn global add json-server ` 
 
 Ensuite, créons quelques "fausses" données dans un fichier `users.json` :
 ```javascript
@@ -459,24 +507,20 @@ Ensuite, créons quelques "fausses" données dans un fichier `users.json` :
 	]
 }
 ```
-Créer une classe Users dans `users.js`
+Créer une fonction `getAllUsers()` Users dans `users.js`
 ```javascript
 const axios = require('axios');
 
-class Users {
-
-     static async all() {
-        let res = await axios.get('http://localhost:3000/users');
-        return res;
-      }
+async function getAllUsers(){
+    let res = await axios.get('http://localhost:3000/users');
+    return res;
 }
 ```
 Puis créer le fichier `users-app.js`dans lequel on définit la fonction pour afficher les données:
 ```javascript
-const Users = require('./users');
-
+const {getAllUsers} = require('./user');
 async function showData() {
-    let res = await Users.all();
+    let res = await getAllUsers();
     console.log(res.data);
 }
 
@@ -487,38 +531,18 @@ Pour faire fonctionner cette fonction, dans une console écrire :
 
 `json-server --watch users.json ` pour démarrer le json-server,
 
+Ouvrir un deuxième terminal et écrire:
+
 `node users-app.js` pour lancer l'application, en s'assurant d'avoir le module `node` d'installé.
 
 Dans la console devrait s'afficher : 
 
 ```
 finished
-[
-		{
-			"id":1,
-			"name": "John",
-			"surname": "Doe",
-			"age": "21"
-		},
-		{
-			"id":2,
-			"name": "Pierre",
-			"surname": "Martin",
-			"age": "10"
-		},
-		{
-			"id":3,
-			"name": "Paul",
-			"surname": "Martin",
-			"age": "45"
-		},
-		{
-			"id":4,
-			"name": "Jack",
-			"surname": "Martin",
-			"age": "4"
-		}
-	]
+[ { id: 1, name: 'John', surname: 'Doe', age: '21' },
+  { id: 2, name: 'Pierre', surname: 'Martin', age: '10' },
+  { id: 3, name: 'Paul', surname: 'Martin', age: '45' },
+  { id: 4, name: 'Jack', surname: 'Martin', age: '4' } ]
 ```
 
 Maintenant testons : 
@@ -551,6 +575,10 @@ test('should fetch users', () => {
     Users.all().then(resp => expect(resp.data).toEqual(users));
 });
 ```
+**Attention**
+
+Si en testant l'erreur suivante apparaît : "'jest' n’est pas reconnu en tant que commande interne ou externe, un programme exécutable ou un fichier de commandes.", il faut installer jest en **global**, soit `npm install -g jest` ou `yarn global add jest`.
+
 **Et voilà !**
 
 Avec `jest.mock('axios')` on mock le module, avec les constantes `users` et `resp` on définie la réponse que le module mocké devra retourner. 
