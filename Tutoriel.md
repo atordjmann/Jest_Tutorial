@@ -258,7 +258,8 @@ Dans un premier temps, nous n'écrirons que du javascript. Aucun HTML. La partie
 Ce que nous allons tester : 
 * une fonction `createUser()` qui à partir des inputs de l'utilisateur, renvoie un objet JSON définissant l'utilisateur.
 * une fonction `addUser()` qui ajoute un utilisateur dans la liste des personnes.
-* une fonction `sortUser()` qui renvoie la liste des personnes triée selon , avec le rang du dernier utilisateur ajouté.
+* une fonction `sortUser()` qui renvoie la liste des personnes triée selon leur âge.
+* une fonction `rankUser()` qui renvoie le classement de l'utilisateur dans la liste triée.
 
 ### Créer un utilisateur
 .. note:: Note
@@ -299,23 +300,16 @@ Correction:
 `user.js`
 
 ```javascript
-const createUser = function(name, surname, age){
-	return {"name":name, "surname":surname, "age":age};
-}
-
 const addUser = function(jsonUser, userList){
 	userList.append(jsonUser);
 }
 
-module.exports  = {userList, createUser, addUser}
+module.exports  = {createUser, addUser}
 ```
 
 `user.test.js`
 ```javascript
 const {createUser, addUser} = require('./user');
-test('create an user', () => {
-	expect(createUser("John", "Doe", "21")).toBe({"name":"John", "surname":"Doe", "age":"21"})
-});
 test('add an user to a list', () => {
 	var userList = [];
 	addUser({"name":"John", "surname":"Doe", "age":"21"},userList);
@@ -323,17 +317,110 @@ test('add an user to a list', () => {
 });
 ```
 
-### Classer l'utilisateur
-Dans le fichier `user.js` ajouter une fonction qui permet de classer les personnes selon leur âge dans une liste de personne telle que userList de la partie précédante.
+### Classer les utilisateurs
+Dans le fichier `user.js` ajouter une fonction `sortUser()` qui permet de classer les personnes selon leur âge dans une liste de personne telle que userList de la partie précédante. Ajouter également une fonction `rankUser()`qui donne le rang d'un utilisateur dans la liste.
 
-Dans le fichier `user.test.js` écrire le test correspondant pour vérifier que le tri se fait correctement.
+Dans le fichier `user.test.js` écrire les tests correspondant pour vérifier que le tri et le classement se font correctement.
 
+Correction:
+
+J'utilise un tri par insertion pour trier ma liste d'utilisateurs.
+
+`user.js`
+```javascript
+const sortUser = function(listUser){
+	for(var i = 1; i < listUser.length; i++){
+		var current = listUser[i];
+		var j = i;
+		while(j > 0 && listUser[j - 1].age > current.age){
+			listUser[j] = listUser[j-1];
+			j = j-1;
+		}
+		userList[j] = current;
+	}
+	return listUser;
+}
+
+const rankUser = function(user, userList){
+	var sortedList = sortUser(userList);
+	var index = sortedList.findIndex(user);
+	if(index != -1){
+		return userList.length - index
+	}
+	else{
+	return - 1
+	}
+}
+module.exports  = {createUser, addUser, sortUser, rankUser}
+```
+
+`user.test.js`
+```javascript
+const {createUser, addUser, sortUser, rankUser} = require('./user');
+test('sort an userList', () => {
+	var userList = [{"name":"John", "surname":"Doe", "age":"21"},
+			{"name":"Pierre", "surname":"Martin", "age":"10"},
+			{"name":"Paul", "surname":"Martin", "age":"45"},
+			{"name":"Jack", "surname":"Martin", "age":"4"}];
+	expect(sortUser(userList)).toBe([{"name":"Jack", "surname":"Martin", "age":"4"},
+			{"name":"Pierre", "surname":"Martin", "age":"10"},
+			{"name":"John", "surname":"Doe", "age":"21"},
+			{"name":"Paul", "surname":"Martin", "age":"45"}])
+});
+test('rank a user in userList', () => {
+	var userList = [{"name":"John", "surname":"Doe", "age":"21"},
+			{"name":"Pierre", "surname":"Martin", "age":"10"},
+			{"name":"Paul", "surname":"Martin", "age":"45"},
+			{"name":"Jack", "surname":"Martin", "age":"4"}];
+	var user = {"name":"Pierre", "surname":"Martin", "age":"10"};
+	expect(rankUser(user, userList)).toBe(3)
+});
+```
 ### Compartimenter les tests
 Dans le fichier `user.test.js` organiser les tests en deux parties à l'aide de describe. Une partie création/ajout d'utilisateur. Et une partie tri.
-### Ajouter des données de test
-Nous allons modifier un peu notre code. Désormais userList sera une variable globale non vide, comme si on récupérait cette liste d'une base de donnée. Dans notre test, nous allons utiliser beforeAll() afin de remplir notre liste, puis un afterAll() afin de la vider après nos tests.
 
-Faire les modifications nécessaires.
+Puis, utiliser beforeAll() afin de remplir notre liste d'utilisateur si besoin, puis un afterAll() afin de la vider après nos tests.
+
+`user.test.js`
+```javascript
+const {createUser, addUser, sortUser, rankUser} = require('./user');
+describe('create and add users', () => {
+	test('create an user', () => {
+		expect(createUser("John", "Doe", "21")).toBe({"name":"John", "surname":"Doe", "age":"21"})
+	});
+	test('add an user to a list', () => {
+		var userList = [];
+		addUser({"name":"John", "surname":"Doe", "age":"21"},userList);
+		expect(userList).toContain({"name":"John", "surname":"Doe", "age":"21"})
+	});
+});
+
+describe('sort and rank users', () => {
+	var userList = [];
+	beforeEach(() =>{
+		userList = [{"name":"John", "surname":"Doe", "age":"21"},
+			{"name":"Pierre", "surname":"Martin", "age":"10"},
+			{"name":"Paul", "surname":"Martin", "age":"45"},
+			{"name":"Jack", "surname":"Martin", "age":"4"}];
+	});
+	afterEach(() => {
+		userList = [];
+	});
+	test('sort an userList', () => {
+		expect(sortUser(userList)).toBe([{"name":"Jack", "surname":"Martin", "age":"4"},
+			{"name":"Pierre", "surname":"Martin", "age":"10"},
+			{"name":"John", "surname":"Doe", "age":"21"},
+			{"name":"Paul", "surname":"Martin", "age":"45"}])
+	});
+	test('rank a user in userList', () => {
+		var user = {"name":"Pierre", "surname":"Martin", "age":"10"};
+		expect(rankUser(user, userList)).toBe(3)
+	});
+
+});
+
+```
+
 
 ### Mocker un utilisateur
 
