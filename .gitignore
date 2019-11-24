@@ -1,0 +1,6 @@
+node_modules
+package-lock.json
+JestProject/node_modules
+JestSum/node_modules
+JestProject/package-lock.json
+JestSum/package-lock.json
