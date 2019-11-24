@@ -262,23 +262,16 @@ Ran all test suites.
 
 ## Projet avec Jest
 ### Description du projet
-Parce qu'il faut bien s'y coller à ces sacrés tests, je vous propose un petit projet rapide afin d'utiliser les principales fonctionnalités de Jest.
+Parce qu'il faut bien s'y coller à ces sacrés tests, je vous propose un petit projet rapide afin d'utiliser les principales fonctionnalités de Jest. Nous allons écrire un code javascript et le tester.
 
-Nous allons utiliser des matchers, tester du code asynchrone, ranger nos tests et mocker des objets.
-
-Nous allons écrire un code javascript destiné à une page web contenant deux fonctionnalités principales.
-
-La première est l'ajout d'un utilisateur à une liste de personnes à l'aide d'inputs comme le nom, prénom, âge...
-
-Après l'ajout de cet utilisateur, il sera possible d'afficher le classement de l'utilisateur au sein des autres personnes.
-
-Dans un premier temps, nous n'écrirons que du javascript. Aucun HTML. La partie HTML est une partie "bonus" qui ne rentrera pas dans le cadre de Jest. Il serait possible de tester les vues affichées, et de faire des tests plus complexes en utilisant l'HTML, mais nous allons rester simples.
+Nous allons utiliser des matchers, tester du code asynchrone, configurer et ranger nos tests et mocker un module. Nous aurons alors vu la majorité des fonctionnalités, tout en restant dans la simplicité. Nous pourrions aller beaucoup plus loin, mais faire quelques test sera déjà pas mal !
 
 Ce que nous allons tester : 
 * une fonction `createUser()` qui à partir des inputs de l'utilisateur, renvoie un objet JSON définissant l'utilisateur.
 * une fonction `addUser()` qui ajoute un utilisateur dans la liste des personnes.
 * une fonction `sortUser()` qui renvoie la liste des personnes triée selon leur âge.
 * une fonction `rankUser()` qui renvoie le classement de l'utilisateur dans la liste triée.
+* une fonction `getAllUsers()` qui renvoie la liste de tous les utilisateurs avec le module axios à l'adresse 'http://localhost:3000/users'
 
 ### Créer un utilisateur
 **Créer un nouveau projet avec le module Jest (voir installation).**
